@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .notification-type {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .booking-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 12px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+        </div>
+        
+        <div class="content">
+            <div class="notification-type">
+                {{#if_eq type "booking.created"}}📅 Đặt phòng thành công{{/if_eq}}
+                {{#if_eq type "booking.confirmed"}}✅ Xác nhận đặt phòng{{/if_eq}}
+                {{#if_eq type "booking.canceled"}}❌ Hủy đặt phòng{{/if_eq}}
+                {{#if_eq type "payment.success"}}💰 Thanh toán thành công{{/if_eq}}
+                {{#if_eq type "payment.failed"}}⚠️ Thanh toán thất bại{{/if_eq}}
+                {{#if_eq type "room.deleted"}}🏠 Phòng không còn khả dụng{{/if_eq}}
+            </div>
+            
+            <h2>{{title}}</h2>
+            <p>{{content}}</p>
+            
+            {{#if bookingId}}
+            <div class="booking-info">
+                <strong>Mã đặt phòng:</strong> {{bookingId}}<br>
+                {{#if startDate}}<strong>Ngày nhận phòng:</strong> {{formatDate startDate}}<br>{{/if}}
+                {{#if endDate}}<strong>Ngày trả phòng:</strong> {{formatDate endDate}}<br>{{/if}}
+                {{#if amount}}<strong>Số tiền:</strong> <span class="amount">{{formatCurrency amount}}</span><br>{{/if}}
+                {{#if roomName}}<strong>Tên phòng:</strong> {{roomName}}<br>{{/if}}
+            </div>
+            {{/if}}
+            
+            {{#if codeId}}
+            <div class="booking-info">
+                <strong>Mã xác thực:</strong> {{codeId}}<br>
+                {{#if codeExpired}}<strong>Hết hạn lúc:</strong> {{formatDate codeExpired}}<br>{{/if}}
+            </div>
+            {{/if}}
+            
+            {{#if actionUrl}}
+            <div style="text-align: center;">
+                <a href="{{actionUrl}}" class="button">Xem chi tiết</a>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="footer">
+            <p>Đây là email tự động từ hệ thống {{appName}}.</p>
+            <p>Nếu bạn có thắc mắc, vui lòng liên hệ: {{supportEmail}}</p>
+            <p>&copy; {{currentYear}} {{appName}}. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+</html>

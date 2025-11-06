@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng đến với {{appName}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .features {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome-icon">🎉</div>
+            <div class="logo">{{appName}}</div>
+        </div>
+        
+        <div class="content">
+            <h2>Chào mừng {{name}}!</h2>
+            <p>Cảm ơn bạn đã đăng ký tài khoản tại {{appName}}. Chúng tôi rất vui được chào đón bạn!</p>
+            
+            <div class="features">
+                <h3>Với {{appName}}, bạn có thể:</h3>
+                <div class="feature-item">🏠 Tìm kiếm và đặt phòng trọ phù hợp</div>
+                <div class="feature-item">💰 Thanh toán an toàn và nhanh chóng</div>
+                <div class="feature-item">📱 Quản lý đặt phòng trên mọi thiết bị</div>
+                <div class="feature-item">🔔 Nhận thông báo real-time</div>
+                <div class="feature-item">⭐ Đánh giá và chia sẻ trải nghiệm</div>
+            </div>
+            
+            <p>Hãy bắt đầu khám phá và tìm cho mình một nơi ở lý tưởng!</p>
+            
+            <div style="text-align: center;">
+                <a href="{{dashboardUrl}}" class="button">Truy cập Dashboard</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Nếu bạn có thắc mắc, vui lòng liên hệ: {{supportEmail}}</p>
+            <p>&copy; {{currentYear}} {{appName}}. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+</html>
