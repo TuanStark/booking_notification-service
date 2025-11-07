@@ -8,20 +8,35 @@ import * as path from 'path';
 @Injectable()
 export class TemplateService implements ITemplateService {
   private readonly logger = new Logger(TemplateService.name);
-  private readonly templatesPath = path.join(process.cwd(), 'src', 'common', 'mail', 'templates');
-  private readonly templateCache = new Map<string, HandlebarsTemplateDelegate>();
+  private readonly templatesPath = path.join(
+    process.cwd(),
+    'src',
+    'common',
+    'mail',
+    'templates',
+  );
+  private readonly templateCache = new Map<
+    string,
+    HandlebarsTemplateDelegate
+  >();
 
   constructor() {
     this.registerHelpers();
   }
 
-  async render(templateName: string, data: Record<string, any>): Promise<string> {
+  async render(
+    templateName: string,
+    data: Record<string, any>,
+  ): Promise<string> {
     try {
       const template = this.getTemplate(templateName);
       const compiledTemplate = handlebars.compile(template);
       return compiledTemplate(data);
     } catch (error) {
-      this.logger.error(`Failed to render template ${templateName}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to render template ${templateName}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -34,25 +49,33 @@ export class TemplateService implements ITemplateService {
       }
 
       const templatePath = path.join(this.templatesPath, `${templateName}.hbs`);
-      
+
       if (!fs.existsSync(templatePath)) {
-        throw new Error(`Template ${templateName} not found at ${templatePath}`);
+        throw new Error(
+          `Template ${templateName} not found at ${templatePath}`,
+        );
       }
 
       const templateContent = fs.readFileSync(templatePath, 'utf8');
-      
+
       // Cache the compiled template
       const compiledTemplate = handlebars.compile(templateContent);
       this.templateCache.set(templateName, compiledTemplate);
 
       return templateContent;
     } catch (error) {
-      this.logger.error(`Failed to load template ${templateName}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to load template ${templateName}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
-  async renderEmailTemplate(templateName: string, data: Record<string, any>): Promise<string> {
+  async renderEmailTemplate(
+    templateName: string,
+    data: Record<string, any>,
+  ): Promise<string> {
     const templateData = {
       ...data,
       currentYear: new Date().getFullYear(),
@@ -65,21 +88,27 @@ export class TemplateService implements ITemplateService {
 
   private registerHelpers(): void {
     // Format currency helper
-    handlebars.registerHelper('formatCurrency', (amount: number, currency: string = 'VND') => {
-      return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: currency,
-      }).format(amount);
-    });
+    handlebars.registerHelper(
+      'formatCurrency',
+      (amount: number, currency: string = 'VND') => {
+        return new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: currency,
+        }).format(amount);
+      },
+    );
 
     // Format date helper
-    handlebars.registerHelper('formatDate', (date: Date | string, format: string = 'dd/MM/yyyy') => {
-      const d = new Date(date);
-      if (format === 'dd/MM/yyyy') {
-        return d.toLocaleDateString('vi-VN');
-      }
-      return d.toLocaleString('vi-VN');
-    });
+    handlebars.registerHelper(
+      'formatDate',
+      (date: Date | string, format: string = 'dd/MM/yyyy') => {
+        const d = new Date(date);
+        if (format === 'dd/MM/yyyy') {
+          return d.toLocaleDateString('vi-VN');
+        }
+        return d.toLocaleString('vi-VN');
+      },
+    );
 
     // Format phone helper
     handlebars.registerHelper('formatPhone', (phone: string) => {
@@ -88,7 +117,7 @@ export class TemplateService implements ITemplateService {
     });
 
     // Conditional helper
-    handlebars.registerHelper('if_eq', function(a: any, b: any, options: any) {
+    handlebars.registerHelper('if_eq', function (a: any, b: any, options: any) {
       if (a === b) {
         return options.fn(this);
       }
@@ -111,8 +140,8 @@ export class TemplateService implements ITemplateService {
     try {
       const files = fs.readdirSync(this.templatesPath);
       return files
-        .filter(file => file.endsWith('.hbs'))
-        .map(file => file.replace('.hbs', ''));
+        .filter((file) => file.endsWith('.hbs'))
+        .map((file) => file.replace('.hbs', ''));
     } catch (error) {
       this.logger.error(`Failed to get available templates: ${error.message}`);
       return [];

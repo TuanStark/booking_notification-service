@@ -8,7 +8,7 @@ async function bootstrap() {
 
   // Create HTTP application
   const app = await NestFactory.create(AppModule);
-  
+
   // Connect to RabbitMQ as microservice
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
@@ -23,12 +23,16 @@ async function bootstrap() {
 
   // Start microservice
   await app.startAllMicroservices();
-  
-  logger.log(`✅ Notification Service is running on port ${process.env.PORT ?? 3007}`);
+
+  logger.log(
+    `✅ Notification Service is running on port ${process.env.PORT ?? 3007}`,
+  );
   logger.log(`🔗 Connected to RabbitMQ: amqp://localhost:5672`);
   logger.log(`📨 Queue: ${process.env.RABBITMQ_QUEUE || 'notification_queue'}`);
   logger.log(`🚀 Microservices started successfully`);
   logger.log(`📡 Ready to receive RabbitMQ messages`);
-  console.log(`🔗 Notification Service is running on port ${process.env.PORT ?? 3007}`);
+  console.log(
+    `🔗 Notification Service is running on port ${process.env.PORT ?? 3007}`,
+  );
 }
 bootstrap();

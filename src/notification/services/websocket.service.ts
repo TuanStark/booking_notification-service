@@ -1,6 +1,11 @@
 // src/notification/services/websocket.service.ts
 import { Injectable, Logger } from '@nestjs/common';
-import { IWebSocketService, INotificationData, INotificationResult, ChannelType } from '../interfaces/notification.interface';
+import {
+  IWebSocketService,
+  INotificationData,
+  INotificationResult,
+  ChannelType,
+} from '../interfaces/notification.interface';
 
 @Injectable()
 export class WebSocketService implements IWebSocketService {
@@ -30,7 +35,10 @@ export class WebSocketService implements IWebSocketService {
   }
 
   isUserConnected(userId: string): boolean {
-    return this.connectedUsers.has(userId) && this.connectedUsers.get(userId)!.size > 0;
+    return (
+      this.connectedUsers.has(userId) &&
+      this.connectedUsers.get(userId)!.size > 0
+    );
   }
 
   getUserConnections(userId: string): string[] {
@@ -38,10 +46,13 @@ export class WebSocketService implements IWebSocketService {
     return userSockets ? Array.from(userSockets) : [];
   }
 
-  async sendToUser(userId: string, notification: INotificationData): Promise<INotificationResult> {
+  async sendToUser(
+    userId: string,
+    notification: INotificationData,
+  ): Promise<INotificationResult> {
     try {
       const userSockets = this.connectedUsers.get(userId);
-      
+
       if (!userSockets || userSockets.size === 0) {
         this.logger.warn(`User ${userId} is not connected`);
         return {
@@ -63,7 +74,9 @@ export class WebSocketService implements IWebSocketService {
 
       // This would be called from WebSocket Gateway
       // For now, we'll simulate the success
-      this.logger.log(`📡 Sending WebSocket notification to user ${userId}: ${notification.title}`);
+      this.logger.log(
+        `📡 Sending WebSocket notification to user ${userId}: ${notification.title}`,
+      );
 
       return {
         success: true,
@@ -71,8 +84,11 @@ export class WebSocketService implements IWebSocketService {
         deliveredAt: new Date(),
       };
     } catch (error) {
-      this.logger.error(`❌ Failed to send WebSocket notification to user ${userId}: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `❌ Failed to send WebSocket notification to user ${userId}: ${error.message}`,
+        error.stack,
+      );
+
       return {
         success: false,
         channel: ChannelType.WEBSOCKET,
@@ -81,9 +97,14 @@ export class WebSocketService implements IWebSocketService {
     }
   }
 
-  async sendToRoom(room: string, notification: INotificationData): Promise<INotificationResult> {
+  async sendToRoom(
+    room: string,
+    notification: INotificationData,
+  ): Promise<INotificationResult> {
     try {
-      this.logger.log(`📡 Broadcasting WebSocket notification to room ${room}: ${notification.title}`);
+      this.logger.log(
+        `📡 Broadcasting WebSocket notification to room ${room}: ${notification.title}`,
+      );
 
       // This would be called from WebSocket Gateway
       // For now, we'll simulate the success
@@ -93,8 +114,11 @@ export class WebSocketService implements IWebSocketService {
         deliveredAt: new Date(),
       };
     } catch (error) {
-      this.logger.error(`❌ Failed to broadcast WebSocket notification to room ${room}: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `❌ Failed to broadcast WebSocket notification to room ${room}: ${error.message}`,
+        error.stack,
+      );
+
       return {
         success: false,
         channel: ChannelType.WEBSOCKET,
@@ -103,9 +127,13 @@ export class WebSocketService implements IWebSocketService {
     }
   }
 
-  async broadcast(notification: INotificationData): Promise<INotificationResult> {
+  async broadcast(
+    notification: INotificationData,
+  ): Promise<INotificationResult> {
     try {
-      this.logger.log(`📡 Broadcasting WebSocket notification to all users: ${notification.title}`);
+      this.logger.log(
+        `📡 Broadcasting WebSocket notification to all users: ${notification.title}`,
+      );
 
       // This would be called from WebSocket Gateway
       // For now, we'll simulate the success
@@ -115,8 +143,11 @@ export class WebSocketService implements IWebSocketService {
         deliveredAt: new Date(),
       };
     } catch (error) {
-      this.logger.error(`❌ Failed to broadcast WebSocket notification: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `❌ Failed to broadcast WebSocket notification: ${error.message}`,
+        error.stack,
+      );
+
       return {
         success: false,
         channel: ChannelType.WEBSOCKET,

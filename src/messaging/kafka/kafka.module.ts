@@ -12,12 +12,16 @@ import { NotificationModule } from '../../notification/notification.module';
         name: 'KAFKA_SERVICE',
         useFactory: (configService: ConfigService) => {
           const logger = new Logger('KafkaModule');
-          const clientId = configService.get<string>('KAFKA_CLIENT_ID') || 'notification-service';
-          const brokers = configService.get<string>('KAFKA_BROKER')?.split(',') || ['localhost:9092'];
-          
+          const clientId =
+            configService.get<string>('KAFKA_CLIENT_ID') ||
+            'notification-service';
+          const brokers = configService
+            .get<string>('KAFKA_BROKER')
+            ?.split(',') || ['localhost:9092'];
+
           logger.log(`🔗 Connecting to Kafka brokers: ${brokers.join(', ')}`);
           logger.log(`🆔 Client ID: ${clientId}`);
-          
+
           return {
             transport: Transport.KAFKA,
             options: {

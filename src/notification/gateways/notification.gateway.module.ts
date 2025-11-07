@@ -18,13 +18,7 @@ import { WebSocketService } from '../services/websocket.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [
-    NotificationGateway,
-    WebSocketService,
-  ],
-  exports: [
-    NotificationGateway,
-    WebSocketService,
-  ],
+  providers: [NotificationGateway, WebSocketService],
+  exports: [NotificationGateway, WebSocketService],
 })
 export class NotificationGatewayModule {}

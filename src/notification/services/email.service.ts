@@ -1,7 +1,11 @@
 // src/notification/services/email.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { IEmailService, INotificationResult, ChannelType } from '../interfaces/notification.interface';
+import {
+  IEmailService,
+  INotificationResult,
+  ChannelType,
+} from '../interfaces/notification.interface';
 
 @Injectable()
 export class EmailService implements IEmailService {
@@ -14,7 +18,7 @@ export class EmailService implements IEmailService {
     subject: string,
     content: string,
     template?: string,
-    data?: Record<string, any>
+    data?: Record<string, any>,
   ): Promise<INotificationResult> {
     try {
       this.logger.log(`Sending email to ${to} with subject: ${subject}`);
@@ -33,7 +37,9 @@ export class EmailService implements IEmailService {
 
       const result = await this.mailerService.sendMail(mailOptions);
 
-      this.logger.log(`✅ Email sent successfully to ${to}, messageId: ${result.messageId}`);
+      this.logger.log(
+        `✅ Email sent successfully to ${to}, messageId: ${result.messageId}`,
+      );
 
       return {
         success: true,
@@ -42,7 +48,10 @@ export class EmailService implements IEmailService {
         deliveredAt: new Date(),
       };
     } catch (error) {
-      this.logger.error(`❌ Failed to send email to ${to}: ${error.message}`, error.stack);
+      this.logger.error(
+        `❌ Failed to send email to ${to}: ${error.message}`,
+        error.stack,
+      );
 
       return {
         success: false,
@@ -59,7 +68,7 @@ export class EmailService implements IEmailService {
       content: string;
       template?: string;
       data?: Record<string, any>;
-    }>
+    }>,
   ): Promise<INotificationResult[]> {
     const results: INotificationResult[] = [];
 
@@ -68,13 +77,15 @@ export class EmailService implements IEmailService {
     const chunks = this.chunkArray(emails, concurrencyLimit);
 
     for (const chunk of chunks) {
-      const promises = chunk.map(email => this.sendEmail(
-        email.to,
-        email.subject,
-        email.content,
-        email.template,
-        email.data
-      ));
+      const promises = chunk.map((email) =>
+        this.sendEmail(
+          email.to,
+          email.subject,
+          email.content,
+          email.template,
+          email.data,
+        ),
+      );
 
       const chunkResults = await Promise.all(promises);
       results.push(...chunkResults);

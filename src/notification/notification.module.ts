@@ -52,15 +52,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     }),
   ],
   controllers: [NotificationController],
-  providers: [
-    NotificationService,
-    EmailService,
-    TemplateService,
-  ],
-  exports: [
-    NotificationService,
-    EmailService,
-    TemplateService,
-  ],
+  providers: [NotificationService, EmailService, TemplateService],
+  exports: [NotificationService, EmailService, TemplateService],
 })
 export class NotificationModule {}

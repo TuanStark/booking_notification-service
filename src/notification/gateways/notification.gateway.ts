@@ -21,7 +21,9 @@ import { NotificationService } from '../notification.service';
   },
   namespace: '/notifications',
 })
-export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -37,9 +39,10 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   async handleConnection(client: Socket) {
     try {
       // Authenticate WebSocket connection
-      const token = client.handshake.auth.token || 
-                   client.handshake.headers.authorization?.split(' ')[1];
-      
+      const token =
+        client.handshake.auth.token ||
+        client.handshake.headers.authorization?.split(' ')[1];
+
       if (!token) {
         this.logger.warn('No token provided for WebSocket connection');
         client.disconnect();
@@ -60,7 +63,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
       // Join user-specific room
       client.join(`user:${userId}`);
-      
+
       // Send connection confirmation
       client.emit('connected', {
         message: 'Connected to notification service',
@@ -69,12 +72,15 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       });
 
       // Send pending notifications
-      const pendingNotifications = await this.notificationService.getPendingNotifications(userId);
+      const pendingNotifications =
+        await this.notificationService.getPendingNotifications(userId);
       if (pendingNotifications.length > 0) {
         client.emit('pending_notifications', pendingNotifications);
       }
 
-      this.logger.log(`✅ User ${userId} connected via WebSocket (${client.id})`);
+      this.logger.log(
+        `✅ User ${userId} connected via WebSocket (${client.id})`,
+      );
     } catch (error) {
       this.logger.error(`❌ WebSocket authentication failed: ${error.message}`);
       client.disconnect();
@@ -87,17 +93,21 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       const userId = this.findUserBySocketId(client.id);
       if (userId) {
         this.webSocketService.removeConnection(userId, client.id);
-        this.logger.log(`👋 User ${userId} disconnected WebSocket (${client.id})`);
+        this.logger.log(
+          `👋 User ${userId} disconnected WebSocket (${client.id})`,
+        );
       }
     } catch (error) {
-      this.logger.error(`Error handling WebSocket disconnect: ${error.message}`);
+      this.logger.error(
+        `Error handling WebSocket disconnect: ${error.message}`,
+      );
     }
   }
 
   @SubscribeMessage('mark_as_read')
   async handleMarkAsRead(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { notificationId: string }
+    @MessageBody() data: { notificationId: string },
   ) {
     try {
       const userId = this.findUserBySocketId(client.id);
@@ -107,15 +117,19 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       }
 
       await this.notificationService.markAsRead(data.notificationId, userId);
-      
+
       client.emit('notification_read', {
         notificationId: data.notificationId,
         timestamp: new Date().toISOString(),
       });
 
-      this.logger.log(`User ${userId} marked notification ${data.notificationId} as read`);
+      this.logger.log(
+        `User ${userId} marked notification ${data.notificationId} as read`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to mark notification as read: ${error.message}`);
+      this.logger.error(
+        `Failed to mark notification as read: ${error.message}`,
+      );
       client.emit('error', { message: 'Failed to mark notification as read' });
     }
   }
@@ -123,7 +137,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   @SubscribeMessage('dismiss_notification')
   async handleDismissNotification(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { notificationId: string }
+    @MessageBody() data: { notificationId: string },
   ) {
     try {
       const userId = this.findUserBySocketId(client.id);
@@ -132,14 +146,19 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         return;
       }
 
-      await this.notificationService.dismissNotification(data.notificationId, userId);
-      
+      await this.notificationService.dismissNotification(
+        data.notificationId,
+        userId,
+      );
+
       client.emit('notification_dismissed', {
         notificationId: data.notificationId,
         timestamp: new Date().toISOString(),
       });
 
-      this.logger.log(`User ${userId} dismissed notification ${data.notificationId}`);
+      this.logger.log(
+        `User ${userId} dismissed notification ${data.notificationId}`,
+      );
     } catch (error) {
       this.logger.error(`Failed to dismiss notification: ${error.message}`);
       client.emit('error', { message: 'Failed to dismiss notification' });
@@ -155,7 +174,8 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         return;
       }
 
-      const notifications = await this.notificationService.getUserNotifications(userId);
+      const notifications =
+        await this.notificationService.getUserNotifications(userId);
       client.emit('notifications_list', notifications);
     } catch (error) {
       this.logger.error(`Failed to get notifications: ${error.message}`);

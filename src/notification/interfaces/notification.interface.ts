@@ -42,12 +42,24 @@ export interface INotificationService {
 }
 
 export interface IEmailService {
-  sendEmail(to: string, subject: string, content: string, template?: string, data?: Record<string, any>): Promise<INotificationResult>;
+  sendEmail(
+    to: string,
+    subject: string,
+    content: string,
+    template?: string,
+    data?: Record<string, any>,
+  ): Promise<INotificationResult>;
 }
 
 export interface IWebSocketService {
-  sendToUser(userId: string, notification: INotificationData): Promise<INotificationResult>;
-  sendToRoom(room: string, notification: INotificationData): Promise<INotificationResult>;
+  sendToUser(
+    userId: string,
+    notification: INotificationData,
+  ): Promise<INotificationResult>;
+  sendToRoom(
+    room: string,
+    notification: INotificationData,
+  ): Promise<INotificationResult>;
   broadcast(notification: INotificationData): Promise<INotificationResult>;
 }
 
