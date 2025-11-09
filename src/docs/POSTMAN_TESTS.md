@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://localhost:3004
+http://localhost:3007
 ```
 
 ## 1. Test VietQR Configuration
