@@ -4,7 +4,7 @@ services:
   notification-service:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: notification-service-dev
     ports:
       - "3007:3007"
