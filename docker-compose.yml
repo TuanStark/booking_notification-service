@@ -33,7 +33,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: sh -c "npx prisma generate && npm run start:dev"
+    command: sh -c "npx prisma migrate deploy && npx prisma generate && npm run start:dev"
     networks:
       my_custom_network:
         ipv4_address: ${APP_IP}
