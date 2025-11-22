@@ -7,7 +7,7 @@ import {
   INotificationResult,
   NotificationStatus,
 } from './interfaces/notification.interface';
-import { NotificationType, ChannelType, ChannelStatus } from '@prisma/client';
+import { NotificationType, ChannelType, ChannelStatus } from './dto/enum';
 import { EmailService } from './services/email.service';
 import { WebSocketService } from './services/websocket.service';
 import { TemplateService } from './services/template.service';

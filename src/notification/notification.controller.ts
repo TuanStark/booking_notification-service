@@ -18,7 +18,7 @@ import { UpdateNotificationDto } from './dto/update-notification.dto';
 import {
   NotificationType,
   ChannelType,
-} from './interfaces/notification.interface';
+} from './dto/enum';
 import { ResponseData } from 'src/common/global/globalClass';
 import { HttpMessage } from 'src/common/global/globalEnum';
 

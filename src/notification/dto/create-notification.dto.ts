@@ -10,11 +10,11 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { NotificationPriority } from '../interfaces/notification.interface';
-import { NotificationType, ChannelType } from '@prisma/client';
+import { NotificationType, ChannelType } from './enum';
 
 export class NotificationChannelDto {
   @IsEnum(ChannelType)
-  type: ChannelType;
+  type: ChannelType | string;
 
   @IsString()
   recipient: string;
