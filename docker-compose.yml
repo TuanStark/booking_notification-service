@@ -25,7 +25,6 @@ services:
       KAFKA_BROKER: ${KAFKA_BROKER}
       KAFKA_CLIENT_ID: ${KAFKA_CLIENT_ID}
       KAFKA_GROUP_ID: ${KAFKA_GROUP_ID}
-      JWT_SECRET: ${JWT_SECRET}
       MAIL_USER: ${MAIL_USER}
       MAIL_PASS: ${MAIL_PASS}
       MAIL_HOST: ${MAIL_HOST}
@@ -38,4 +37,3 @@ services:
 networks:
   my_custom_network:
     external: true
-
