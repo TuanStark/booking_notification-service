@@ -2,12 +2,22 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { setupRabbitMQTopology } from './messaging/rabbitmq/rabbitmq-topology.setup';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  // Create HTTP application
+  // Create HTTP application first so ConfigModule loads .env
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
+
+  // Setup RabbitMQ topology: bind notification_queue to user_exchange + booking_topic_exchange
+  // Must use same RABBITMQ_URL as auth-service (e.g. amqp://admin:admin@booking_rabbitmq:5672)
+  await setupRabbitMQTopology({
+    url: config.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672',
+    queue: config.get<string>('RABBITMQ_QUEUE') || 'notification_queue',
+  });
 
   // Connect to RabbitMQ as microservice
   app.connectMicroservice<MicroserviceOptions>({
@@ -24,11 +34,13 @@ async function bootstrap() {
   // Start microservice
   await app.startAllMicroservices();
 
+  const rabbitUrl = config.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672';
+  const queue = config.get<string>('RABBITMQ_QUEUE') || 'notification_queue';
   logger.log(
     `✅ Notification Service is running on port ${process.env.PORT ?? 3007}`,
   );
-  logger.log(`🔗 Connected to RabbitMQ: amqp://localhost:5672`);
-  logger.log(`📨 Queue: ${process.env.RABBITMQ_QUEUE || 'notification_queue'}`);
+  logger.log(`🔗 RabbitMQ: ${rabbitUrl.replace(/:[^:@]+@/, ':****@')}`);
+  logger.log(`📨 Queue: ${queue} (listening for create.user, resend.verification.code, booking.created, booking.canceled)`);
   logger.log(`🚀 Microservices started successfully`);
   logger.log(`📡 Ready to receive RabbitMQ messages`);
   console.log(

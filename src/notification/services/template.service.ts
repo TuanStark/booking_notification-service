@@ -8,13 +8,23 @@ import * as path from 'path';
 @Injectable()
 export class TemplateService implements ITemplateService {
   private readonly logger = new Logger(TemplateService.name);
-  private readonly templatesPath = path.join(
-    process.cwd(),
-    'src',
-    'common',
-    'mail',
-    'templates',
-  );
+  // Resolve templates: dist/common/mail/templates (prod) or src/common/mail/templates (dev)
+  private readonly templatesPath = this.resolveTemplatesPath();
+
+  private resolveTemplatesPath(): string {
+    // When compiled: __dirname = dist/notification/services → dist/common/mail/templates
+    const distTemplates = path.join(__dirname, '..', '..', 'common', 'mail', 'templates');
+    if (fs.existsSync(distTemplates)) {
+      return distTemplates;
+    }
+    // Fallback: process.cwd()/dist/... (Docker CMD runs from /app, dist exists)
+    const cwdDist = path.join(process.cwd(), 'dist', 'common', 'mail', 'templates');
+    if (fs.existsSync(cwdDist)) {
+      return cwdDist;
+    }
+    // Dev (ts-node): process.cwd()/src/...
+    return path.join(process.cwd(), 'src', 'common', 'mail', 'templates');
+  }
   private readonly templateCache = new Map<
     string,
     HandlebarsTemplateDelegate

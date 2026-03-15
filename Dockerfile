@@ -18,6 +18,9 @@ COPY . .
 RUN npx prisma generate && \
     npm run build
 
+# Ensure mail templates are in dist (nest assets + explicit copy for Docker)
+COPY src/common/mail/templates ./dist/common/mail/templates
+
 # =============================
 # 2. PRUNER – Loại bỏ devDependencies
 # =============================

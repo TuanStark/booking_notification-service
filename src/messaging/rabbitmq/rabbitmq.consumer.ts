@@ -13,7 +13,7 @@ export class RabbitMQConsumerController implements OnModuleInit {
   onModuleInit() {
     this.logger.log('🚀 RabbitMQ Consumer initialized successfully');
     this.logger.log(
-      '📡 Listening for events: booking.created, booking.canceled, create.user',
+      '📡 Listening for events: booking.created, booking.canceled, create.user, resend.verification.code',
     );
     this.logger.log('🔗 Ready to receive messages from RabbitMQ');
     this.logger.log('✅ Consumer is ready to process messages');
@@ -160,6 +160,48 @@ export class RabbitMQConsumerController implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `❌ Error processing create user: ${error.message}`,
+        error.stack,
+      );
+      const channel = context.getChannelRef();
+      channel.nack(context.getMessage(), false, true);
+    }
+  }
+
+  @EventPattern(RabbitMQTopics.RESEND_VERIFICATION_CODE)
+  async handleResendVerificationCode(
+    @Payload() data: any,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      this.logger.log(`🎯 RESEND_VERIFICATION_CODE event received!`);
+      this.logger.log(`📦 Data: ${JSON.stringify(data)}`);
+
+      if (!data.id || !data.email || !data.codeId || !data.codeExpired) {
+        this.logger.error(`❌ Missing required fields: id, email, codeId, codeExpired`);
+        throw new Error(
+          'Missing required fields: id, email, codeId, codeExpired',
+        );
+      }
+
+      const result = await this.notificationService.sendResendVerificationEmail(
+        data.id,
+        {
+          email: data.email,
+          name: data.name,
+          codeId: data.codeId,
+          codeExpired: data.codeExpired,
+        },
+      );
+
+      this.logger.log(
+        `✅ Resend verification email sent successfully: ${JSON.stringify(result)}`,
+      );
+
+      const channel = context.getChannelRef();
+      channel.ack(context.getMessage());
+    } catch (error) {
+      this.logger.error(
+        `❌ Error processing resend verification: ${error.message}`,
         error.stack,
       );
       const channel = context.getChannelRef();

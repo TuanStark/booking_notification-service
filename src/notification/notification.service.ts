@@ -426,6 +426,33 @@ export class NotificationService implements INotificationService {
     );
   }
 
+  async sendResendVerificationEmail(
+    userId: string,
+    userData: { email: string; name?: string; codeId: string; codeExpired: Date },
+  ): Promise<INotificationResult[]> {
+    return this.create(
+      {
+        type: NotificationType.WELCOME,
+        title: 'Mã xác thực mới - Dorm Booking System',
+        content: `Xin chào ${userData.name || 'bạn'}! Mã xác thực mới đã được tạo. Vui lòng sử dụng mã bên dưới để kích hoạt tài khoản.`,
+        data: {
+          ...userData,
+          codeId: userData.codeId,
+          codeExpired: userData.codeExpired,
+        },
+        channels: [
+          {
+            type: ChannelType.EMAIL,
+            recipient: userData.email,
+            template: 'notification',
+          },
+          { type: ChannelType.IN_APP, recipient: userId },
+        ],
+      },
+      userId,
+    );
+  }
+
   private async sendToChannel(
     notification: INotificationData,
     channel: any,
