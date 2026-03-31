@@ -65,7 +65,7 @@ export interface IWebSocketService {
 
 export interface ITemplateService {
   render(templateName: string, data: Record<string, any>): Promise<string>;
-  getTemplate(templateName: string): string;
+  getTemplate(templateName: string): (context: Record<string, any>) => string;
 }
 
 export enum NotificationType {

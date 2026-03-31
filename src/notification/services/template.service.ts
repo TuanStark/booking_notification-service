@@ -39,8 +39,7 @@ export class TemplateService implements ITemplateService {
     data: Record<string, any>,
   ): Promise<string> {
     try {
-      const template = this.getTemplate(templateName);
-      const compiledTemplate = handlebars.compile(template);
+      const compiledTemplate = this.getTemplate(templateName);
       return compiledTemplate(data);
     } catch (error) {
       this.logger.error(
@@ -51,11 +50,11 @@ export class TemplateService implements ITemplateService {
     }
   }
 
-  getTemplate(templateName: string): string {
+  getTemplate(templateName: string): HandlebarsTemplateDelegate {
     try {
       // Check cache first
       if (this.templateCache.has(templateName)) {
-        return this.templateCache.get(templateName)!.toString();
+        return this.templateCache.get(templateName)!;
       }
 
       const templatePath = path.join(this.templatesPath, `${templateName}.hbs`);
@@ -72,7 +71,7 @@ export class TemplateService implements ITemplateService {
       const compiledTemplate = handlebars.compile(templateContent);
       this.templateCache.set(templateName, compiledTemplate);
 
-      return templateContent;
+      return compiledTemplate;
     } catch (error) {
       this.logger.error(
         `Failed to load template ${templateName}: ${error.message}`,
