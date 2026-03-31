@@ -1,5 +1,7 @@
-import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { ContactFormDto } from './dto/contact-form.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import {
   INotificationService,
@@ -19,6 +21,7 @@ export class NotificationService implements INotificationService {
   private readonly logger = new Logger(NotificationService.name);
 
   constructor(
+    private readonly configService: ConfigService,
     private readonly emailService: EmailService,
     private readonly webSocketService: WebSocketService,
     private readonly templateService: TemplateService,
@@ -62,6 +65,102 @@ export class NotificationService implements INotificationService {
     }
 
     return results;
+  }
+
+  async submitContactForm(contactFormDto: ContactFormDto) {
+    const supportEmail =
+      this.configService.get<string>('CONTACT_RECEIVER_EMAIL') ||
+      this.configService.get<string>('MAIL_FROM_EMAIL') ||
+      this.configService.get<string>('MAIL_USER');
+
+    if (!supportEmail) {
+      throw new Error(
+        'Missing CONTACT_RECEIVER_EMAIL or mail configuration for contact form',
+      );
+    }
+
+    const normalized = {
+      name: contactFormDto.name.trim(),
+      email: contactFormDto.email.trim().toLowerCase(),
+      phone: contactFormDto.phone?.trim() || 'Không cung cấp',
+      subject: contactFormDto.subject.trim(),
+      message: contactFormDto.message.trim(),
+    };
+
+    const appName =
+      this.configService.get<string>('APP_NAME') || 'Dorm Booking System';
+
+    const supportHtml = await this.templateService.renderEmailTemplate(
+      'notification',
+      {
+        title: `[Contact] ${normalized.subject}`,
+        appName,
+        type: 'Liên hệ từ khách hàng',
+        content: `
+Khách hàng: ${normalized.name}
+Email: ${normalized.email}
+Số điện thoại: ${normalized.phone}
+
+Nội dung:
+${normalized.message}
+        `,
+        data: {
+          ...normalized,
+        },
+      },
+    );
+
+    const supportResult = await this.emailService.sendEmail(
+      supportEmail,
+      `[Contact] ${normalized.subject} - ${normalized.name}`,
+      supportHtml,
+      'notification',
+      {
+        title: `[Contact] ${normalized.subject}`,
+        appName,
+        ...normalized,
+      },
+    );
+
+    if (!supportResult.success) {
+      throw new Error(supportResult.error || 'Failed to send contact email');
+    }
+
+    const ackHtml = await this.templateService.renderEmailTemplate(
+      'notification',
+      {
+        title: 'Chúng tôi đã nhận được liên hệ của bạn',
+        appName,
+        type: 'Xác nhận liên hệ',
+        content: `
+Xin chào ${normalized.name},
+
+Chúng tôi đã nhận được liên hệ của bạn với chủ đề "${normalized.subject}".
+Đội ngũ hỗ trợ sẽ phản hồi trong thời gian sớm nhất.
+        `,
+        data: {
+          ...normalized,
+        },
+      },
+    );
+
+    const ackResult = await this.emailService.sendEmail(
+      normalized.email,
+      'Dorm Booking - Đã nhận liên hệ của bạn',
+      ackHtml,
+      'notification',
+      {
+        title: 'Chúng tôi đã nhận được liên hệ của bạn',
+        appName,
+        ...normalized,
+      },
+    );
+
+    return {
+      success: true,
+      forwardedTo: supportEmail,
+      acknowledgementSent: ackResult.success,
+    };
   }
 
   async create(
@@ -550,5 +649,14 @@ export class NotificationService implements INotificationService {
 
   private generateId(): string {
     return `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private escapeHtml(value: string) {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 }

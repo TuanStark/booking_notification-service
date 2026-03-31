@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { ContactFormDto } from './dto/contact-form.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import {
   NotificationType,
@@ -25,6 +26,36 @@ import { HttpMessage } from 'src/common/global/globalEnum';
 @Controller('notifications')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
+
+  @Post('contact')
+  async submitContactForm(@Body() body: ContactFormDto) {
+    const name = body?.name?.trim();
+    const email = body?.email?.trim();
+    const subject = body?.subject?.trim();
+    const message = body?.message?.trim();
+
+    if (!name || !email || !subject || !message) {
+      throw new BadRequestException(
+        'Name, email, subject and message are required',
+      );
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      throw new BadRequestException('Email is invalid');
+    }
+
+    const result = await this.notificationService.submitContactForm({
+      ...body,
+      name,
+      email,
+      subject,
+      message,
+      phone: body?.phone?.trim(),
+    });
+
+    return new ResponseData(result, HttpStatus.OK, HttpMessage.SUCCESS);
+  }
 
   @Post()
   async create(

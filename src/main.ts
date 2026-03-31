@@ -34,17 +34,21 @@ async function bootstrap() {
   // Start microservice
   await app.startAllMicroservices();
 
+  // Start HTTP server so API Gateway can proxy REST requests like /notifications/contact
+  const port = Number(process.env.PORT ?? 3007);
+  await app.listen(port);
+
   const rabbitUrl = config.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672';
   const queue = config.get<string>('RABBITMQ_QUEUE') || 'notification_queue';
   logger.log(
-    `✅ Notification Service is running on port ${process.env.PORT ?? 3007}`,
+    `✅ Notification Service is running on port ${port}`,
   );
   logger.log(`🔗 RabbitMQ: ${rabbitUrl.replace(/:[^:@]+@/, ':****@')}`);
   logger.log(`📨 Queue: ${queue} (listening for create.user, resend.verification.code, booking.created, booking.canceled)`);
   logger.log(`🚀 Microservices started successfully`);
   logger.log(`📡 Ready to receive RabbitMQ messages`);
   console.log(
-    `🔗 Notification Service is running on port ${process.env.PORT ?? 3007}`,
+    `🔗 Notification Service is running on port ${port}`,
   );
 }
 bootstrap();
