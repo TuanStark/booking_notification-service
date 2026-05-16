@@ -9,6 +9,7 @@ export enum NotificationType {
     ROOM_UPDATED = 'ROOM_UPDATED',
     SYSTEM_MAINTENANCE = 'SYSTEM_MAINTENANCE',
     WELCOME = 'WELCOME',
+    PASSWORD_RESET = 'PASSWORD_RESET',
 }
 export enum NotificationStatus {
     PENDING = 'PENDING',

@@ -44,7 +44,7 @@ async function bootstrap() {
     `✅ Notification Service is running on port ${port}`,
   );
   logger.log(`🔗 RabbitMQ: ${rabbitUrl.replace(/:[^:@]+@/, ':****@')}`);
-  logger.log(`📨 Queue: ${queue} (listening for create.user, resend.verification.code, booking.created, booking.canceled)`);
+  logger.log(`📨 Queue: ${queue} (listening for create.user, resend.verification.code, password.reset.requested, booking.created, booking.canceled)`);
   logger.log(`🚀 Microservices started successfully`);
   logger.log(`📡 Ready to receive RabbitMQ messages`);
   console.log(

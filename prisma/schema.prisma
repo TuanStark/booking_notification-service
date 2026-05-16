@@ -51,6 +51,7 @@ enum NotificationType {
   ROOM_UPDATED
   SYSTEM_MAINTENANCE
   WELCOME
+  PASSWORD_RESET
 }
 
 enum NotificationStatus {

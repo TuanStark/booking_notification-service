@@ -552,6 +552,39 @@ Chúng tôi đã nhận được liên hệ của bạn với chủ đề "${nor
     );
   }
 
+  async sendPasswordResetEmail(
+    userId: string,
+    payload: {
+      email: string;
+      name?: string;
+      resetLink: string;
+      expiresAt: string | Date;
+    },
+  ): Promise<INotificationResult[]> {
+    return this.create(
+      {
+        type: NotificationType.PASSWORD_RESET,
+        title: 'Đặt lại mật khẩu — Dorm Booking System',
+        content: `Xin chào ${payload.name || 'bạn'}! Bạn vừa yêu cầu đặt lại mật khẩu. Nhấn nút bên dưới để tiếp tục. Liên kết sẽ hết hạn sau thời gian đã ghi trong email.`,
+        data: {
+          type: NotificationType.PASSWORD_RESET,
+          actionUrl: payload.resetLink,
+          actionLabel: 'Đặt lại mật khẩu',
+          expiresAt: payload.expiresAt,
+        },
+        channels: [
+          {
+            type: ChannelType.EMAIL,
+            recipient: payload.email,
+            template: 'notification',
+          },
+          { type: ChannelType.IN_APP, recipient: userId },
+        ],
+      },
+      userId,
+    );
+  }
+
   private async sendToChannel(
     notification: INotificationData,
     channel: any,

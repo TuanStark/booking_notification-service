@@ -6,7 +6,7 @@ const logger = new Logger('RabbitMQTopology');
 /**
  * Setup RabbitMQ topology: create exchanges, queue, bindings.
  * Notification needs to receive from:
- * - user_exchange: create.user, resend.verification.code (from auth-service)
+ * - user_exchange: create.user, resend.verification.code, password.reset.requested (from auth-service)
  * - booking_topic_exchange: booking.created, booking.canceled (from booking-service)
  */
 export async function setupRabbitMQTopology(options?: {
@@ -34,6 +34,7 @@ export async function setupRabbitMQTopology(options?: {
     // 3. Bind queue to user_exchange (auth-service events)
     await channel.bindQueue(queue, userExchange, 'create.user');
     await channel.bindQueue(queue, userExchange, 'resend.verification.code');
+    await channel.bindQueue(queue, userExchange, 'password.reset.requested');
 
     // 4. Bind queue to booking_topic_exchange (booking-service events)
     await channel.bindQueue(queue, bookingExchange, 'booking.created');

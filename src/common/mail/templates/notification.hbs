@@ -87,6 +87,7 @@
                 {{#if_eq type "payment.success"}}💰 Thanh toán thành công{{/if_eq}}
                 {{#if_eq type "payment.failed"}}⚠️ Thanh toán thất bại{{/if_eq}}
                 {{#if_eq type "room.deleted"}}🏠 Phòng không còn khả dụng{{/if_eq}}
+                {{#if_eq type "PASSWORD_RESET"}}🔑 Đặt lại mật khẩu{{/if_eq}}
             </div>
             
             <h2>{{title}}</h2>
@@ -109,9 +110,17 @@
             </div>
             {{/if}}
             
+            {{#if expiresAt}}
+            {{#unless codeId}}
+            <div class="booking-info">
+                <strong>Liên kết hết hạn:</strong> {{formatDate expiresAt}} (giờ hệ thống)<br>
+            </div>
+            {{/unless}}
+            {{/if}}
+
             {{#if actionUrl}}
             <div style="text-align: center;">
-                <a href="{{actionUrl}}" class="button">Xem chi tiết</a>
+                <a href="{{actionUrl}}" class="button">{{#if actionLabel}}{{actionLabel}}{{else}}Xem chi tiết{{/if}}</a>
             </div>
             {{/if}}
         </div>

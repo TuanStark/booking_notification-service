@@ -13,7 +13,7 @@ export class RabbitMQConsumerController implements OnModuleInit {
   onModuleInit() {
     this.logger.log('🚀 RabbitMQ Consumer initialized successfully');
     this.logger.log(
-      '📡 Listening for events: booking.created, booking.canceled, create.user, resend.verification.code',
+      '📡 Listening for events: booking.created, booking.canceled, create.user, resend.verification.code, password.reset.requested',
     );
     this.logger.log('🔗 Ready to receive messages from RabbitMQ');
     this.logger.log('✅ Consumer is ready to process messages');
@@ -122,6 +122,49 @@ export class RabbitMQConsumerController implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Error processing send notification: ${error.message}`,
+        error.stack,
+      );
+      const channel = context.getChannelRef();
+      channel.nack(context.getMessage(), false, true);
+    }
+  }
+
+  @EventPattern(RabbitMQTopics.PASSWORD_RESET_REQUESTED)
+  async handlePasswordResetRequested(
+    @Payload() data: any,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      this.logger.log(`🎯 PASSWORD_RESET_REQUESTED event received!`);
+
+      if (!data?.id || !data?.email || !data?.resetLink || !data?.expiresAt) {
+        this.logger.error(
+          `❌ Missing required fields: id, email, resetLink, expiresAt`,
+        );
+        throw new Error(
+          'Missing required fields: id, email, resetLink, expiresAt',
+        );
+      }
+
+      const result = await this.notificationService.sendPasswordResetEmail(
+        data.id,
+        {
+          email: data.email,
+          name: data.name,
+          resetLink: data.resetLink,
+          expiresAt: data.expiresAt,
+        },
+      );
+
+      this.logger.log(
+        `✅ Password reset email sent: ${JSON.stringify(result)}`,
+      );
+
+      const channel = context.getChannelRef();
+      channel.ack(context.getMessage());
+    } catch (error) {
+      this.logger.error(
+        `❌ Error processing password reset request: ${error.message}`,
         error.stack,
       );
       const channel = context.getChannelRef();

@@ -2,6 +2,7 @@ export enum RabbitMQTopics {
   // User events
   CREATE_USER = 'create.user',
   RESEND_VERIFICATION_CODE = 'resend.verification.code',
+  PASSWORD_RESET_REQUESTED = 'password.reset.requested',
 
   // Building events
   CREATE_NOTIFICATION = 'create.notification',
